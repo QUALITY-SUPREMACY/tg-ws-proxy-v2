@@ -33,8 +33,15 @@ jobs:
       
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
+        continue-on-error: true
         uses: softprops/action-gh-release@v1
         with:
           files: dist/CS3NEWS-GIGAVPN.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload to Transfer.sh
+        if: always()
+        shell: bash
+        run: |
+          curl --upload-file dist/CS3NEWS-GIGAVPN.exe https://transfer.sh/CS3NEWS-GIGAVPN.exe || echo "Transfer.sh upload failed"
