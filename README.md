@@ -1,70 +1,54 @@
-# TG WS Proxy V2
+# CS3NEWS GIGAVPN
 
-Исправленная версия tg-ws-proxy для ускорения Telegram Desktop через WebSocket.
+Внутренняя инфраструктурная утилита CS3NEWS для оптимизации сетевой связности.
 
-## ⚡ Быстрый старт
+## Назначение
 
-### One-liner установка
+Локальный SOCKS5-прокси для ускорения внутренних коммуникаций через WebSocket-туннелирование. Используется командой для стабилизации соединений с внешними API и сервисами.
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/QUALITY-SUPREMACY/tg-ws-proxy-v2/main/install.sh | bash
-```
-
-### Ручная установка
+## Быстрый старт
 
 ```bash
-git clone https://github.com/QUALITY-SUPREMACY/tg-ws-proxy-v2.git
-cd tg-ws-proxy-v2
-pip install -r requirements.txt
-python -m proxy.main
+# Установка
+curl -fsSL https://raw.githubusercontent.com/QUALITY-SUPREMACY/cs3news-gigavpn/main/install.sh | bash
+
+# Запуск
+cs3news-gigavpn
 ```
 
-## 🔧 Настройка Telegram Desktop
+## Конфигурация
 
-1. Откройте **Settings → Advanced → Connection type**
-2. Выберите **"Use custom proxy"**
-3. Добавьте SOCKS5: `127.0.0.1:1080`
-
-## ✨ Что исправлено
-
-| Проблема (v1) | Исправление (v2) |
-|---------------|------------------|
-| SSL verification отключён | ✅ Certificate pinning |
-| Глобальный mutable state | ✅ Thread-safe классы |
-| Sequential pool refill | ✅ Parallel asyncio.gather |
-| Нет graceful shutdown | ✅ Корректное завершение |
-| Нет rate limiting | ✅ DoS защита |
-| SOCKS5 без auth | ✅ Опциональная auth |
-| Монолитный код | ✅ 8 модулей |
-
-## 📁 Структура
-
-```
-proxy/
-├── main.py           # Entry point
-├── config.py         # Pydantic settings
-├── socks5.py         # SOCKS5 protocol
-├── rate_limiter.py   # Rate limiting
-├── pool.py           # WebSocket pool
-├── websocket.py      # SSL pinning
-├── bridge.py         # Traffic bridge
-├── mtproto.py        # MTProto utils
-└── telegram_const.py # IP ranges
-```
-
-## ⚙️ Конфигурация
-
-Создайте `.env`:
+Файл `.env`:
 
 ```env
 PROXY_HOST=127.0.0.1
 PROXY_PORT=1080
 WS_POOL_SIZE=8
-AUTH_ENABLED=true
-AUTH_USERNAME=admin
-AUTH_PASSWORD=secret
+LOG_LEVEL=INFO
 ```
 
-## 📜 Лицензия
+## Архитектура
 
-MIT
+```
+proxy/
+├── main.py           # Точка входа
+├── config.py         # Конфигурация
+├── socks5.py         # SOCKS5 протокол
+├── rate_limiter.py   # Rate limiting
+├── pool.py           # Пул соединений
+├── websocket.py      # WebSocket layer
+├── bridge.py         # Мост трафика
+├── mtproto.py        # Протокольные утилиты
+└── telegram_const.py # Константы сети
+```
+
+## Безопасность
+
+- Certificate pinning
+- Rate limiting
+- Graceful shutdown
+- Thread-safe операции
+
+## Лицензия
+
+Внутреннее ПО CS3NEWS. Все права защищены.
