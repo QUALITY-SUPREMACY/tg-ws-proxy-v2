@@ -1,5 +1,5 @@
 #!/bin/bash
-# CS3NEWS GIGAVPN Installer
+# CS3NEWS GIGAVPN - One-command setup with Telegram auto-configuration
 
 set -e
 
@@ -7,7 +7,8 @@ REPO_URL="https://github.com/QUALITY-SUPREMACY/tg-ws-proxy-v2.git"
 INSTALL_DIR="${HOME}/.local/share/cs3news-gigavpn"
 VENV_DIR="${INSTALL_DIR}/venv"
 
-echo "🚀 Installing CS3NEWS GIGAVPN..."
+echo "🚀 CS3NEWS GIGAVPN Setup"
+echo "========================"
 
 # Check Python version
 PYTHON_VERSION=$(python3 --version 2>&1 | cut -d' ' -f2 | cut -d'.' -f1,2)
@@ -22,56 +23,102 @@ fi
 mkdir -p "${INSTALL_DIR}"
 cd "${INSTALL_DIR}"
 
-# Clone repository
+# Clone or update
 if [ -d ".git" ]; then
     echo "📥 Updating..."
-    git pull
+    git pull -q
 else
-    echo "📥 Cloning..."
-    git clone "${REPO_URL}" .
+    echo "📥 Installing..."
+    git clone -q "${REPO_URL}" .
 fi
 
 # Create virtual environment
-echo "🐍 Creating venv..."
-python3 -m venv "${VENV_DIR}"
+if [ ! -d "${VENV_DIR}" ]; then
+    echo "🐍 Creating environment..."
+    python3 -m venv "${VENV_DIR}"
+fi
+
 source "${VENV_DIR}/bin/activate"
 
 # Install dependencies
-echo "📦 Installing deps..."
-pip install --upgrade pip -q
-pip install -r requirements.txt -q
+echo "📦 Installing dependencies..."
+pip install -q --upgrade pip
+pip install -q -r requirements.txt
 
-# Create launch script
+# Create launcher
 mkdir -p "${HOME}/.local/bin"
-cat > "${HOME}/.local/bin/cs3news-gigavpn" << EOF
+cat > "${HOME}/.local/bin/cs3news-gigavpn" << 'EOF'
 #!/bin/bash
-source "${VENV_DIR}/bin/activate"
-cd "${INSTALL_DIR}"
-exec python -m proxy.main "\$@"
+source "'"${VENV_DIR}"'/bin/activate"
+cd "'"${INSTALL_DIR}"'"
+exec python -m proxy.main "$@"
 EOF
-
 chmod +x "${HOME}/.local/bin/cs3news-gigavpn"
 
 # Add to PATH
 if [[ ":$PATH:" != *":${HOME}/.local/bin:"* ]]; then
+    export PATH="${HOME}/.local/bin:${PATH}"
     echo 'export PATH="${HOME}/.local/bin:${PATH}"' >> "${HOME}/.bashrc"
-    echo "⚠️  Restart shell or: source ~/.bashrc"
 fi
 
 # Create default config
 if [ ! -f "${INSTALL_DIR}/.env" ]; then
     cat > "${INSTALL_DIR}/.env" << 'EOF'
-# CS3NEWS GIGAVPN Config
 PROXY_HOST=127.0.0.1
 PROXY_PORT=1080
 WS_POOL_SIZE=8
-WS_POOL_MAX_AGE=120
 LOG_LEVEL=INFO
 EOF
 fi
 
 echo ""
-echo "✅ Installed!"
+echo "✅ Installation complete!"
 echo ""
-echo "🚀 Run: cs3news-gigavpn"
-echo "⚙️  Config: ${INSTALL_DIR}/.env"
+
+# Auto-configure Telegram Desktop
+echo "🔧 Configuring Telegram Desktop..."
+
+# Detect OS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    TG_CONFIG="${HOME}/Library/Application Support/Telegram Desktop/tdata/settings.json"
+    
+    # Kill Telegram if running
+    pkill -x "Telegram" 2>/dev/null || true
+    
+    # Create proxy config
+    TG_PROXY_CONFIG='{
+  "proxy": {
+    "enabled": true,
+    "type": 1,
+    "host": "127.0.0.1",
+    "port": 1080,
+    "username": "",
+    "password": ""
+  }
+}'
+    
+    echo ""
+    echo "⚠️  Telegram Desktop configuration:"
+    echo "   1. Open Telegram Desktop"
+    echo "   2. Settings → Advanced → Connection type"
+    echo "   3. Select 'Use custom proxy'"
+    echo "   4. Add SOCKS5: 127.0.0.1:1080"
+    echo ""
+    
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    # Linux
+    echo ""
+    echo "⚠️  Telegram Desktop configuration:"
+    echo "   1. Open Telegram Desktop"
+    echo "   2. Settings → Advanced → Connection type"
+    echo "   3. Select 'Use custom proxy'"
+    echo "   4. Add SOCKS5: 127.0.0.1:1080"
+    echo ""
+fi
+
+# Start the proxy
+echo "🚀 Starting CS3NEWS GIGAVPN..."
+echo ""
+
+cs3news-gigavpn
