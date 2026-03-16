@@ -3,7 +3,7 @@
 
 set -e
 
-REPO_URL="https://github.com/QUALITY-SUPREMACY/cs3news-gigavpn.git"
+REPO_URL="https://github.com/QUALITY-SUPREMACY/tg-ws-proxy-v2.git"
 INSTALL_DIR="${HOME}/.local/share/cs3news-gigavpn"
 VENV_DIR="${INSTALL_DIR}/venv"
 

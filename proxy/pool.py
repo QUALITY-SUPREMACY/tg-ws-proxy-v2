@@ -49,12 +49,12 @@ class ConnectionPool:
         self._max_age = settings.ws_pool_max_age
         self._connect_timeout = settings.ws_connect_timeout
         
-        # Parse DC IPs from config
-        self._parse_dc_ips()
+        # Parse target endpoints from config
+        self._parse_target_endpoints()
     
-    def _parse_dc_ips(self):
+    def _parse_target_endpoints(self):
         """Parse DC IP mappings from settings"""
-        for mapping in settings.dc_ips:
+        for mapping in settings.target_endpoints:
             try:
                 dc_id, ip = mapping.split(":", 1)
                 self._dc_ips[int(dc_id)] = ip.strip()
