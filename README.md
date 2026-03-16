@@ -1,28 +1,20 @@
 # TG WS Proxy V2
 
-[![Docker](https://github.com/Flowseal/tg-ws-proxy/actions/workflows/docker.yml/badge.svg)](https://github.com/Flowseal/tg-ws-proxy/actions/workflows/docker.yml)
-
 Исправленная версия tg-ws-proxy для ускорения Telegram Desktop через WebSocket.
 
 ## ⚡ Быстрый старт
 
-### Вариант 1: Docker (рекомендуется)
+### One-liner установка
 
 ```bash
-docker run -d --name tg-proxy -p 1080:1080 ghcr.io/flowseal/tg-ws-proxy-v2:latest
+curl -fsSL https://raw.githubusercontent.com/QUALITY-SUPREMACY/tg-ws-proxy-v2/main/install.sh | bash
 ```
 
-### Вариант 2: One-liner установка
+### Ручная установка
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Flowseal/tg-ws-proxy/main/install.sh | bash
-```
-
-### Вариант 3: Ручная установка
-
-```bash
-git clone https://github.com/Flowseal/tg-ws-proxy.git
-cd tg-ws-proxy
+git clone https://github.com/QUALITY-SUPREMACY/tg-ws-proxy-v2.git
+cd tg-ws-proxy-v2
 pip install -r requirements.txt
 python -m proxy.main
 ```
